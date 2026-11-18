@@ -47,12 +47,12 @@ $spreadClass  = ['single'=>'spread-single','three_card'=>'spread-three','decisio
   <div class="nav-inner">
     <a href="/mysticmind/" class="nav-logo">Mystic<span>Mind</span></a>
     <div class="nav-links">
-      <a href="/mysticmind/home.php">Home</a>
-      <a href="/mysticmind/dashboard.php">Dashboard</a>
-      <a href="/mysticmind/reading.php">New Reading</a>
-      <a href="/mysticmind/history.php" class="active">History</a>
-      <a href="/mysticmind/journal.php">Journal</a>
-      <a href="/mysticmind/logout.php" class="btn-nav">Logout</a>
+      <a href="/mysticmind/home">Home</a>
+      <a href="/mysticmind/dashboard">Dashboard</a>
+      <a href="/mysticmind/reading">New Reading</a>
+      <a href="/mysticmind/history" class="active">History</a>
+      <a href="/mysticmind/journal">Journal</a>
+      <a href="/mysticmind/logout" class="btn-nav">Logout</a>
     </div>
   </div>
 </nav>
@@ -64,7 +64,7 @@ $spreadClass  = ['single'=>'spread-single','three_card'=>'spread-three','decisio
   <?php if ($viewReading): ?>
   <!-- Single reading detail view -->
   <div style="margin-bottom:1.5rem">
-    <a href="/mysticmind/history.php" class="btn btn-outline btn-sm">← Back to History</a>
+    <a href="/mysticmind/history" class="btn btn-outline btn-sm">← Back to History</a>
   </div>
   <div class="panel">
     <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:1.5rem">
@@ -165,7 +165,7 @@ $spreadClass  = ['single'=>'spread-single','three_card'=>'spread-three','decisio
     <hr class="divider">
     <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
       <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?= $viewReading['id'] ?>, 'reading')">Delete Reading</button>
-      <a href="/mysticmind/history.php" class="btn btn-outline btn-sm">← Back</a>
+      <a href="/mysticmind/history" class="btn btn-outline btn-sm">← Back</a>
     </div>
   </div>
 
@@ -180,7 +180,7 @@ $spreadClass  = ['single'=>'spread-single','three_card'=>'spread-three','decisio
       <div style="text-align:center;padding:3rem">
         <div style="font-size:3rem;margin-bottom:1rem">📜</div>
         <p style="color:var(--text-muted);margin-bottom:1.5rem">No readings yet. Start your first one!</p>
-        <a href="/mysticmind/reading.php" class="btn btn-gold">Begin a Reading</a>
+        <a href="/mysticmind/reading" class="btn btn-gold">Begin a Reading</a>
       </div>
     <?php else: ?>
     <table class="history-table">
@@ -201,7 +201,7 @@ $spreadClass  = ['single'=>'spread-single','three_card'=>'spread-three','decisio
           <td><?= htmlspecialchars(mb_strimwidth($r['user_question'] ?? '—', 0, 60, '…')) ?></td>
           <td><span class="sentiment-badge sentiment-<?= $r['sentiment'] ?>"><?= getSentimentLabel($r['sentiment']) ?></span></td>
           <td style="white-space:nowrap">
-            <a href="/mysticmind/history.php?view=<?= $r['id'] ?>" class="btn btn-outline btn-sm">View</a>
+            <a href="/mysticmind/history?view=<?= $r['id'] ?>" class="btn btn-outline btn-sm">View</a>
             <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?= $r['id'] ?>, 'reading')">Delete</button>
           </td>
         </tr>
@@ -230,11 +230,11 @@ $spreadClass  = ['single'=>'spread-single','three_card'=>'spread-three','decisio
       <div>
         <p class="footer-col-title">Navigate</p>
         <ul class="footer-nav-list">
-          <li><a href="/mysticmind/home.php">Home</a></li>
-          <li><a href="/mysticmind/dashboard.php">Dashboard</a></li>
-          <li><a href="/mysticmind/reading.php">New Reading</a></li>
-          <li><a href="/mysticmind/history.php">History</a></li>
-          <li><a href="/mysticmind/journal.php">Journal</a></li>
+          <li><a href="/mysticmind/home">Home</a></li>
+          <li><a href="/mysticmind/dashboard">Dashboard</a></li>
+          <li><a href="/mysticmind/reading">New Reading</a></li>
+          <li><a href="/mysticmind/history">History</a></li>
+          <li><a href="/mysticmind/journal">Journal</a></li>
         </ul>
       </div>
       <div>
@@ -249,7 +249,7 @@ $spreadClass  = ['single'=>'spread-single','three_card'=>'spread-three','decisio
   </div>
   <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
-    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
+    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved · <span class="footer-dev">Developed by <em>Jessie Jean Santos</em></span></p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>
   </div>
 </footer>

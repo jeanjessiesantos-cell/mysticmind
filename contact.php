@@ -240,12 +240,12 @@
     <a href="/mysticmind/" class="nav-logo">Mystic<span>Mind</span></a>
     <div class="nav-links">
       <a href="/mysticmind/">Home</a>
-      <a href="/mysticmind/about.php">About</a>
-      <a href="/mysticmind/contact.php" class="active">Contact</a>
+      <a href="/mysticmind/about">About</a>
+      <a href="/mysticmind/contact" class="active">Contact</a>
       <?php if (isLoggedIn()): ?>
-        <a href="/mysticmind/home.php" class="btn-nav">My Space</a>
+        <a href="/mysticmind/home" class="btn-nav">My Space</a>
       <?php else: ?>
-        <a href="/mysticmind/login.php" class="btn-nav">Sign In</a>
+        <a href="/mysticmind/login" class="btn-nav">Sign In</a>
       <?php endif; ?>
     </div>
   </div>
@@ -324,10 +324,10 @@
         <p class="footer-col-title">Navigate</p>
         <ul class="footer-nav-list">
           <li><a href="/mysticmind/">Home</a></li>
-          <li><a href="/mysticmind/about.php">About</a></li>
-          <li><a href="/mysticmind/contact.php">Contact</a></li>
-          <li><a href="/mysticmind/login.php">Sign In</a></li>
-          <li><a href="/mysticmind/register.php">Register</a></li>
+          <li><a href="/mysticmind/about">About</a></li>
+          <li><a href="/mysticmind/contact">Contact</a></li>
+          <li><a href="/mysticmind/login">Sign In</a></li>
+          <li><a href="/mysticmind/register">Register</a></li>
         </ul>
       </div>
       <div>
@@ -342,7 +342,7 @@
   </div>
   <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
-    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
+    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved · <span class="footer-dev">Developed by <em>Jessie Jean Santos</em></span></p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>
   </div>
 </footer>

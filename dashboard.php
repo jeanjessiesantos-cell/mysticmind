@@ -179,12 +179,12 @@ else                                $greeting = 'Good Night';
   <div class="nav-inner">
     <a href="/mysticmind/" class="nav-logo">Mystic<span>Mind</span></a>
     <div class="nav-links">
-      <a href="/mysticmind/home.php">Home</a>
-      <a href="/mysticmind/dashboard.php" class="active">Dashboard</a>
-      <a href="/mysticmind/reading.php">New Reading</a>
-      <a href="/mysticmind/history.php">History</a>
-      <a href="/mysticmind/journal.php">Journal</a>
-      <a href="/mysticmind/logout.php" class="btn-nav">Logout</a>
+      <a href="/mysticmind/home">Home</a>
+      <a href="/mysticmind/dashboard" class="active">Dashboard</a>
+      <a href="/mysticmind/reading">New Reading</a>
+      <a href="/mysticmind/history">History</a>
+      <a href="/mysticmind/journal">Journal</a>
+      <a href="/mysticmind/logout" class="btn-nav">Logout</a>
     </div>
   </div>
 </nav>
@@ -206,8 +206,8 @@ else                                $greeting = 'Good Night';
       <?php endif; ?>
     </div>
     <div class="quick-actions">
-      <a href="/mysticmind/reading.php" class="btn btn-gold">🔮 New Reading</a>
-      <a href="/mysticmind/journal.php" class="btn btn-outline">📝 Journal</a>
+      <a href="/mysticmind/reading" class="btn btn-gold">🔮 New Reading</a>
+      <a href="/mysticmind/journal" class="btn btn-outline">📝 Journal</a>
     </div>
   </div>
 
@@ -293,9 +293,9 @@ else                                $greeting = 'Good Night';
     <h3>🌟 What would you like to explore today?</h3>
     <p style="margin-bottom:1rem">Choose a spread to begin your reading, or revisit your past insights below.</p>
     <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
-      <a href="/mysticmind/reading.php?spread=single" class="btn btn-outline btn-sm">🃏 Single Card</a>
-      <a href="/mysticmind/reading.php?spread=three_card" class="btn btn-outline btn-sm">🌙 Past · Present · Future</a>
-      <a href="/mysticmind/reading.php?spread=decision" class="btn btn-outline btn-sm">⚖️ Decision Spread</a>
+      <a href="/mysticmind/reading?spread=single" class="btn btn-outline btn-sm">🃏 Single Card</a>
+      <a href="/mysticmind/reading?spread=three_card" class="btn btn-outline btn-sm">🌙 Past · Present · Future</a>
+      <a href="/mysticmind/reading?spread=decision" class="btn btn-outline btn-sm">⚖️ Decision Spread</a>
     </div>
   </div>
 
@@ -351,7 +351,7 @@ else                                $greeting = 'Good Night';
     <div>
       <div class="section-header">
         <h3>📜 Recent Readings</h3>
-        <a href="/mysticmind/history.php" class="btn btn-outline btn-sm">View All</a>
+        <a href="/mysticmind/history" class="btn btn-outline btn-sm">View All</a>
       </div>
       <div class="panel panel-sm">
         <?php if (empty($recentReadings)): ?>
@@ -375,7 +375,7 @@ else                                $greeting = 'Good Night';
                 <td style="white-space:nowrap;font-size:0.82rem"><?= date('M d, Y', strtotime($r['created_at'])) ?></td>
                 <td><span class="spread-badge <?= $spreadClass[$r['spread_type']] ?? '' ?>"><?= $spreadLabels[$r['spread_type']] ?? $r['spread_type'] ?></span></td>
                 <td><span class="sentiment-badge sentiment-<?= $r['sentiment'] ?>"><?= getSentimentLabel($r['sentiment']) ?></span></td>
-                <td><a href="/mysticmind/history.php?view=<?= $r['id'] ?>" class="btn btn-outline btn-sm">View</a></td>
+                <td><a href="/mysticmind/history?view=<?= $r['id'] ?>" class="btn btn-outline btn-sm">View</a></td>
               </tr>
               <?php endforeach; ?>
             </tbody>
@@ -388,7 +388,7 @@ else                                $greeting = 'Good Night';
     <div>
       <div class="section-header">
         <h3>📝 Recent Journal</h3>
-        <a href="/mysticmind/journal.php" class="btn btn-outline btn-sm">View All</a>
+        <a href="/mysticmind/journal" class="btn btn-outline btn-sm">View All</a>
       </div>
       <?php if (empty($recentJournals)): ?>
         <div class="panel panel-sm">
@@ -407,7 +407,7 @@ else                                $greeting = 'Good Night';
           <p class="journal-preview-text"><?= htmlspecialchars(mb_strimwidth($j['entry_text'], 0, 100, '…')) ?></p>
         </div>
         <?php endforeach; ?>
-        <a href="/mysticmind/journal.php" class="btn btn-outline btn-sm" style="margin-top:0.25rem">See all entries →</a>
+        <a href="/mysticmind/journal" class="btn btn-outline btn-sm" style="margin-top:0.25rem">See all entries →</a>
       <?php endif; ?>
     </div>
 
@@ -439,11 +439,11 @@ else                                $greeting = 'Good Night';
       <div>
         <p class="footer-col-title">Navigate</p>
         <ul class="footer-nav-list">
-          <li><a href="/mysticmind/home.php">Home</a></li>
-          <li><a href="/mysticmind/dashboard.php">Dashboard</a></li>
-          <li><a href="/mysticmind/reading.php">New Reading</a></li>
-          <li><a href="/mysticmind/history.php">History</a></li>
-          <li><a href="/mysticmind/journal.php">Journal</a></li>
+          <li><a href="/mysticmind/home">Home</a></li>
+          <li><a href="/mysticmind/dashboard">Dashboard</a></li>
+          <li><a href="/mysticmind/reading">New Reading</a></li>
+          <li><a href="/mysticmind/history">History</a></li>
+          <li><a href="/mysticmind/journal">Journal</a></li>
         </ul>
       </div>
       <div>
@@ -458,7 +458,7 @@ else                                $greeting = 'Good Night';
   </div>
   <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
-    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
+    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved · <span class="footer-dev">Developed by <em>Jessie Jean Santos</em></span></p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>
   </div>
 </footer>

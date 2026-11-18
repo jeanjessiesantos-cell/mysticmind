@@ -135,12 +135,12 @@ else                                 { $greeting = 'Good Day'; $symbol = '🌙';
   <div class="nav-inner">
     <a href="/mysticmind/" class="nav-logo">Mystic<span>Mind</span></a>
     <div class="nav-links">
-      <a href="/mysticmind/home.php" class="active">Home</a>
-      <a href="/mysticmind/dashboard.php">Dashboard</a>
-      <a href="/mysticmind/reading.php">New Reading</a>
-      <a href="/mysticmind/history.php">History</a>
-      <a href="/mysticmind/journal.php">Journal</a>
-      <a href="/mysticmind/logout.php" class="btn-nav">Logout</a>
+      <a href="/mysticmind/home" class="active">Home</a>
+      <a href="/mysticmind/dashboard">Dashboard</a>
+      <a href="/mysticmind/reading">New Reading</a>
+      <a href="/mysticmind/history">History</a>
+      <a href="/mysticmind/journal">Journal</a>
+      <a href="/mysticmind/logout" class="btn-nav">Logout</a>
     </div>
   </div>
 </nav>
@@ -166,7 +166,7 @@ else                                 { $greeting = 'Good Day'; $symbol = '🌙';
     <p class="home-date"><?= date('l, F j, Y') ?></p>
 
     <div style="margin-top:2.5rem">
-      <a href="/mysticmind/reading.php" class="btn btn-gold">🔮 Start Reading</a>
+      <a href="/mysticmind/reading" class="btn btn-gold">🔮 Start Reading</a>
     </div>
 
   </div>
@@ -188,11 +188,11 @@ else                                 { $greeting = 'Good Day'; $symbol = '🌙';
       <div>
         <p class="footer-col-title">Navigate</p>
         <ul class="footer-nav-list">
-          <li><a href="/mysticmind/home.php">Home</a></li>
-          <li><a href="/mysticmind/dashboard.php">Dashboard</a></li>
-          <li><a href="/mysticmind/reading.php">New Reading</a></li>
-          <li><a href="/mysticmind/history.php">History</a></li>
-          <li><a href="/mysticmind/journal.php">Journal</a></li>
+          <li><a href="/mysticmind/home">Home</a></li>
+          <li><a href="/mysticmind/dashboard">Dashboard</a></li>
+          <li><a href="/mysticmind/reading">New Reading</a></li>
+          <li><a href="/mysticmind/history">History</a></li>
+          <li><a href="/mysticmind/journal">Journal</a></li>
         </ul>
       </div>
       <div>
@@ -207,7 +207,7 @@ else                                 { $greeting = 'Good Day'; $symbol = '🌙';
   </div>
   <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
-    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
+    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved · <span class="footer-dev">Developed by <em>Jessie Jean Santos</em></span></p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>
   </div>
 </footer>

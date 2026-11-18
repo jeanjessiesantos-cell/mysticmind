@@ -711,3 +711,7 @@ body.modal-open { overflow: hidden; }
 .disclaimer-body strong { color: var(--accent-light); }
 .disclaimer-ok { margin-top: 0.75rem; min-width: 200px; justify-content: center; }
 @media (max-width: 520px) { .disclaimer-dialog { padding: 2rem 1.25rem 1.5rem; } .disclaimer-heading { font-size: 1.3rem; } }
+
+/* ===== Developer credit in the copyright line ===== */
+.footer-dev { color: inherit; }
+.footer-dev em { font-style: normal; color: rgba(232, 197, 106, 0.6); }

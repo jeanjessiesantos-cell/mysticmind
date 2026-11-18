@@ -72,7 +72,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 function requireLogin() {
     if (!isset($_SESSION['user_id'])) {
-        header('Location: /mysticmind/login.php');
+        header('Location: /mysticmind/login');
         exit;
     }
 }

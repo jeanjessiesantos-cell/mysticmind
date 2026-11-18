@@ -80,12 +80,12 @@ $entries = $q->get_result()->fetch_all(MYSQLI_ASSOC);
   <div class="nav-inner">
     <a href="/mysticmind/" class="nav-logo">Mystic<span>Mind</span></a>
     <div class="nav-links">
-      <a href="/mysticmind/home.php">Home</a>
-      <a href="/mysticmind/dashboard.php">Dashboard</a>
-      <a href="/mysticmind/reading.php">New Reading</a>
-      <a href="/mysticmind/history.php">History</a>
-      <a href="/mysticmind/journal.php" class="active">Journal</a>
-      <a href="/mysticmind/logout.php" class="btn-nav">Logout</a>
+      <a href="/mysticmind/home">Home</a>
+      <a href="/mysticmind/dashboard">Dashboard</a>
+      <a href="/mysticmind/reading">New Reading</a>
+      <a href="/mysticmind/history">History</a>
+      <a href="/mysticmind/journal" class="active">Journal</a>
+      <a href="/mysticmind/logout" class="btn-nav">Logout</a>
     </div>
   </div>
 </nav>
@@ -160,7 +160,7 @@ $entries = $q->get_result()->fetch_all(MYSQLI_ASSOC);
           <td><span class="sentiment-badge sentiment-<?= $entry['sentiment'] ?>"><?= getSentimentLabel($entry['sentiment']) ?></span></td>
           <td>
             <?php if ($entry['reading_id']): ?>
-              <a href="/mysticmind/history.php?view=<?= $entry['reading_id'] ?>" class="btn btn-outline btn-sm">🔮 View</a>
+              <a href="/mysticmind/history?view=<?= $entry['reading_id'] ?>" class="btn btn-outline btn-sm">🔮 View</a>
             <?php else: ?>
               <span style="color:var(--text-muted);font-size:0.82rem">—</span>
             <?php endif; ?>
@@ -217,11 +217,11 @@ if (searchInput) {
       <div>
         <p class="footer-col-title">Navigate</p>
         <ul class="footer-nav-list">
-          <li><a href="/mysticmind/home.php">Home</a></li>
-          <li><a href="/mysticmind/dashboard.php">Dashboard</a></li>
-          <li><a href="/mysticmind/reading.php">New Reading</a></li>
-          <li><a href="/mysticmind/history.php">History</a></li>
-          <li><a href="/mysticmind/journal.php">Journal</a></li>
+          <li><a href="/mysticmind/home">Home</a></li>
+          <li><a href="/mysticmind/dashboard">Dashboard</a></li>
+          <li><a href="/mysticmind/reading">New Reading</a></li>
+          <li><a href="/mysticmind/history">History</a></li>
+          <li><a href="/mysticmind/journal">Journal</a></li>
         </ul>
       </div>
       <div>
@@ -236,7 +236,7 @@ if (searchInput) {
   </div>
   <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
-    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
+    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved · <span class="footer-dev">Developed by <em>Jessie Jean Santos</em></span></p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>
   </div>
 </footer>

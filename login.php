@@ -2,7 +2,7 @@
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/db.php';
 
-if (isLoggedIn()) { header('Location: /mysticmind/home.php'); exit; }
+if (isLoggedIn()) { header('Location: /mysticmind/home'); exit; }
 
 $errors = [];
 
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf()) {
                 $_SESSION['user_id']  = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['email']    = $user['email'];
-                header('Location: /mysticmind/dashboard.php');
+                header('Location: /mysticmind/dashboard');
                 exit;
             } else {
                 $errors[] = 'Invalid username/email or password.';
@@ -124,8 +124,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf()) {
   <div class="nav-inner">
     <a href="/mysticmind/" class="nav-logo">Mystic<span>Mind</span></a>
     <div class="nav-links">
-      <a href="/mysticmind/login.php" class="active">Login</a>
-      <a href="/mysticmind/register.php" class="btn-nav">Register</a>
+      <a href="/mysticmind/login" class="active">Login</a>
+      <a href="/mysticmind/register" class="btn-nav">Register</a>
     </div>
   </div>
 </nav>
@@ -176,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf()) {
     </form>
 
     <div class="auth-footer">
-      Don't have an account? <a href="/mysticmind/register.php">Create one</a>
+      Don't have an account? <a href="/mysticmind/register">Create one</a>
     </div>
   </div>
 </div>
@@ -211,9 +211,9 @@ function togglePw() {
         <p class="footer-col-title">Navigate</p>
         <ul class="footer-nav-list">
           <li><a href="/mysticmind/">Home</a></li>
-          <li><a href="/mysticmind/about.php">About</a></li>
-          <li><a href="/mysticmind/contact.php">Contact</a></li>
-          <li><a href="/mysticmind/register.php">Register</a></li>
+          <li><a href="/mysticmind/about">About</a></li>
+          <li><a href="/mysticmind/contact">Contact</a></li>
+          <li><a href="/mysticmind/register">Register</a></li>
         </ul>
       </div>
       <div>
@@ -228,7 +228,7 @@ function togglePw() {
   </div>
   <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
-    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
+    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved · <span class="footer-dev">Developed by <em>Jessie Jean Santos</em></span></p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>
   </div>
 </footer>

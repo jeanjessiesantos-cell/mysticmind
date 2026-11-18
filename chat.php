@@ -21,13 +21,13 @@ $user = getCurrentUser();
   <div class="nav-inner">
     <a href="/mysticmind/" class="nav-logo">Mystic<span>Mind</span></a>
     <div class="nav-links">
-      <a href="/mysticmind/home.php">Home</a>
-      <a href="/mysticmind/dashboard.php">Dashboard</a>
-      <a href="/mysticmind/reading.php">New Reading</a>
-      <a href="/mysticmind/chat.php" class="active">Ask the Oracle</a>
-      <a href="/mysticmind/history.php">History</a>
-      <a href="/mysticmind/journal.php">Journal</a>
-      <a href="/mysticmind/logout.php" class="btn-nav">Logout</a>
+      <a href="/mysticmind/home">Home</a>
+      <a href="/mysticmind/dashboard">Dashboard</a>
+      <a href="/mysticmind/reading">New Reading</a>
+      <a href="/mysticmind/chat" class="active">Ask the Oracle</a>
+      <a href="/mysticmind/history">History</a>
+      <a href="/mysticmind/journal">Journal</a>
+      <a href="/mysticmind/logout" class="btn-nav">Logout</a>
     </div>
   </div>
 </nav>
@@ -74,11 +74,11 @@ $user = getCurrentUser();
     <div class="footer-col">
       <h4>Navigate</h4>
       <ul>
-        <li><a href="/mysticmind/home.php">Home</a></li>
-        <li><a href="/mysticmind/dashboard.php">Dashboard</a></li>
-        <li><a href="/mysticmind/reading.php">New Reading</a></li>
-        <li><a href="/mysticmind/history.php">History</a></li>
-        <li><a href="/mysticmind/journal.php">Journal</a></li>
+        <li><a href="/mysticmind/home">Home</a></li>
+        <li><a href="/mysticmind/dashboard">Dashboard</a></li>
+        <li><a href="/mysticmind/reading">New Reading</a></li>
+        <li><a href="/mysticmind/history">History</a></li>
+        <li><a href="/mysticmind/journal">Journal</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -92,7 +92,7 @@ $user = getCurrentUser();
   </div>
   <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom">
-    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
+    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved · <span class="footer-dev">Developed by <em>Jessie Jean Santos</em></span></p>
     <p class="footer-tagline">Intelligent Tarot · Self-Reflection · Clarity</p>
   </div>
 </footer>

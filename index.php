@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 if (isLoggedIn()) {
-    header('Location: /mysticmind/dashboard.php');
+    header('Location: /mysticmind/dashboard');
     exit;
 }
 ?>
@@ -374,9 +374,9 @@ if (isLoggedIn()) {
     <a href="/mysticmind/" class="nav-logo">Mystic<span>Mind</span></a>
     <div class="nav-links">
       <a href="/mysticmind/" class="active">Home</a>
-      <a href="/mysticmind/about.php">About</a>
-      <a href="/mysticmind/contact.php">Contact</a>
-      <a href="/mysticmind/login.php" class="btn-nav">Sign In</a>
+      <a href="/mysticmind/about">About</a>
+      <a href="/mysticmind/contact">Contact</a>
+      <a href="/mysticmind/login" class="btn-nav">Sign In</a>
     </div>
   </div>
 </nav>
@@ -398,8 +398,8 @@ if (isLoggedIn()) {
   </p>
 
   <div class="landing-btns">
-    <a href="/mysticmind/register.php" class="btn btn-gold">✨ Begin Your Journey</a>
-    <a href="/mysticmind/login.php" class="btn btn-ghost">Sign In</a>
+    <a href="/mysticmind/register" class="btn btn-gold">✨ Begin Your Journey</a>
+    <a href="/mysticmind/login" class="btn btn-ghost">Sign In</a>
   </div>
 
 </div>
@@ -433,10 +433,10 @@ if (isLoggedIn()) {
         <p class="footer-col-title">Navigate</p>
         <ul class="footer-nav-list">
           <li><a href="/mysticmind/">Home</a></li>
-          <li><a href="/mysticmind/about.php">About</a></li>
-          <li><a href="/mysticmind/contact.php">Contact</a></li>
-          <li><a href="/mysticmind/login.php">Sign In</a></li>
-          <li><a href="/mysticmind/register.php">Register</a></li>
+          <li><a href="/mysticmind/about">About</a></li>
+          <li><a href="/mysticmind/contact">Contact</a></li>
+          <li><a href="/mysticmind/login">Sign In</a></li>
+          <li><a href="/mysticmind/register">Register</a></li>
         </ul>
       </div>
 
@@ -456,7 +456,7 @@ if (isLoggedIn()) {
   <!-- Bottom bar -->
   <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
-    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
+    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved · <span class="footer-dev">Developed by <em>Jessie Jean Santos</em></span></p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>
   </div>
 

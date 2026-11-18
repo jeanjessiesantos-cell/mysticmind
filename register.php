@@ -2,7 +2,7 @@
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/db.php';
 
-if (isLoggedIn()) { header('Location: /mysticmind/dashboard.php'); exit; }
+if (isLoggedIn()) { header('Location: /mysticmind/dashboard'); exit; }
 
 $errors = [];
 $success = '';
@@ -249,8 +249,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf()) {
   <div class="nav-inner">
     <a href="/mysticmind/" class="nav-logo">Mystic<span>Mind</span></a>
     <div class="nav-links">
-      <a href="/mysticmind/login.php">Login</a>
-      <a href="/mysticmind/register.php" class="btn-nav active">Register</a>
+      <a href="/mysticmind/login">Login</a>
+      <a href="/mysticmind/register" class="btn-nav active">Register</a>
     </div>
   </div>
 </nav>
@@ -329,7 +329,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf()) {
     </form>
 
     <div class="auth-footer">
-      Already have an account? <a href="/mysticmind/login.php">Sign in</a>
+      Already have an account? <a href="/mysticmind/login">Sign in</a>
     </div>
   </div>
 </div>
@@ -396,9 +396,9 @@ function togglePw(inputId, btn) {
         <p class="footer-col-title">Navigate</p>
         <ul class="footer-nav-list">
           <li><a href="/mysticmind/">Home</a></li>
-          <li><a href="/mysticmind/about.php">About</a></li>
-          <li><a href="/mysticmind/contact.php">Contact</a></li>
-          <li><a href="/mysticmind/login.php">Sign In</a></li>
+          <li><a href="/mysticmind/about">About</a></li>
+          <li><a href="/mysticmind/contact">Contact</a></li>
+          <li><a href="/mysticmind/login">Sign In</a></li>
         </ul>
       </div>
       <div>
@@ -413,7 +413,7 @@ function togglePw(inputId, btn) {
   </div>
   <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
-    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
+    <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved · <span class="footer-dev">Developed by <em>Jessie Jean Santos</em></span></p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>
   </div>
 </footer>

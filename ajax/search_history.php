@@ -50,7 +50,7 @@ if (empty($rows)) {
           <td>{$q_esc}</td>
           <td><span class='sentiment-badge sentiment-{$r['sentiment']}'>{$sent}</span></td>
           <td style='white-space:nowrap'>
-            <a href='/mysticmind/history.php?view={$r['id']}' class='btn btn-outline btn-sm'>View</a>
+            <a href='/mysticmind/history?view={$r['id']}' class='btn btn-outline btn-sm'>View</a>
             <button class='btn btn-danger btn-sm' onclick='confirmDelete({$r['id']}, \"reading\")'>Delete</button>
           </td>
         </tr>";

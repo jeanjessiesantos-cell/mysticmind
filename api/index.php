@@ -2,15 +2,27 @@
 /**
  * Vercel entry point.
  * Vercel runs PHP only inside the api/ folder, so every page request
- * (e.g. /mysticmind/login.php) is sent here, and this file loads the real page.
+ * (e.g. /mysticmind/login) is sent here, and this file loads the real page.
  * Not used on XAMPP.
  */
 $root = realpath(__DIR__ . '/..');
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $path = rawurldecode($path);
 $path = preg_replace('#^/mysticmind#', '', $path);
+
+// Clean URLs: /mysticmind/home.php  ->  301 redirect to /mysticmind/home  (page visits only, not AJAX/forms)
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET' && preg_match('#^/(?!ajax/)([A-Za-z0-9_/-]+)\.php$#', $path, $m)) {
+    $clean = ($m[1] === 'index') ? '/mysticmind/' : '/mysticmind/' . $m[1];
+    $qs = $_SERVER['QUERY_STRING'] ?? '';
+    header('Location: ' . $clean . ($qs !== '' ? '?' . $qs : ''), true, 301);
+    exit;
+}
+if ($path === '/index') { header('Location: /mysticmind/', true, 301); exit; }
+
 if ($path === '' || $path === '/') $path = '/index.php';
 if (substr($path, -1) === '/') $path .= 'index.php';
+// /mysticmind/home  ->  home.php
+if (pathinfo($path, PATHINFO_EXTENSION) === '') $path .= '.php';
 
 $file = realpath($root . $path);
 $ok = $file !== false

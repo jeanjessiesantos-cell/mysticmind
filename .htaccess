@@ -1,0 +1,24 @@
+# Clean URLs on XAMPP / Apache: /mysticmind/home instead of /mysticmind/home.php
+Options -MultiViews
+RewriteEngine On
+RewriteBase /mysticmind/
+
+# Keep private folders and files private
+RewriteRule ^(includes|tools|api)/ - [F,L]
+RewriteRule \.(sql|md)$ - [F,L]
+
+# Old links ending in .php -> redirect to the clean address (page visits only, not AJAX)
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteCond %{THE_REQUEST} \s/+mysticmind/index\.php[\s?] [NC]
+RewriteRule ^ /mysticmind/ [R=301,L]
+
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteCond %{THE_REQUEST} \s/+mysticmind/((?!ajax/)[A-Za-z0-9_/-]+)\.php[\s?] [NC]
+RewriteRule ^ /mysticmind/%1 [R=301,L,QSA]
+
+# /mysticmind/home  ->  serve home.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+?)/?$ $1.php [L]
+
