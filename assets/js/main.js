@@ -1,25 +1,255 @@
 // ===== MysticMind Main JS =====
 
-// Stars background
-(function createStars() {
-  const container = document.createElement('div');
-  container.className = 'stars';
-  document.body.prepend(container);
-  for (let i = 0; i < 80; i++) {
+// ===== CSRF protection =====
+// Every page has <meta name="csrf-token">. This adds the token as an
+// X-CSRF-Token header to every same-site POST made with fetch(),
+// so existing and future AJAX calls are protected automatically.
+(function attachCsrfToFetch() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  if (!meta || !window.fetch) return;
+  const token     = meta.content;
+  const origFetch = window.fetch.bind(window);
+
+  window.fetch = function (input, init = {}) {
+    const method = (init.method || (input instanceof Request ? input.method : 'GET')).toUpperCase();
+    const url    = input instanceof Request ? input.url : String(input);
+    const sameOrigin = new URL(url, location.href).origin === location.origin;
+
+    if (sameOrigin && method !== 'GET' && method !== 'HEAD') {
+      const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
+      headers.set('X-CSRF-Token', token);
+      init = Object.assign({}, init, { headers });
+    }
+    return origFetch(input, init);
+  };
+})();
+
+// ===== Majestic background: stars, gold sparkles, candle glows, rising embers =====
+(function createAmbience() {
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rand = (a, b) => Math.random() * (b - a) + a;
+
+  // Twinkling stars
+  const stars = document.createElement('div');
+  stars.className = 'stars';
+  stars.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 90; i++) {
     const s = document.createElement('div');
     s.className = 'star';
-    const size = Math.random() * 2.5 + 0.5;
-    s.style.cssText = `
-      width:${size}px; height:${size}px;
-      left:${Math.random()*100}%;
-      top:${Math.random()*100}%;
-      --dur:${(Math.random()*4+2).toFixed(1)}s;
-      --op:${(Math.random()*0.5+0.2).toFixed(2)};
-      animation-delay:${(Math.random()*5).toFixed(1)}s;
-    `;
-    container.appendChild(s);
+    const size = rand(0.5, 2.6);
+    s.style.cssText = `width:${size}px;height:${size}px;left:${rand(0,100)}%;top:${rand(0,100)}%;` +
+      `--dur:${rand(2,6).toFixed(1)}s;--op:${rand(0.25,0.85).toFixed(2)};animation-delay:${rand(0,5).toFixed(1)}s;`;
+    stars.appendChild(s);
   }
+
+  // Four-point gold sparkles (bigger glints)
+  for (let i = 0; i < 26; i++) {
+    const g = document.createElement('div');
+    g.className = 'glint';
+    const size = rand(6, 16);
+    g.style.cssText = `width:${size}px;height:${size}px;left:${rand(0,100)}%;top:${rand(0,100)}%;` +
+      `--dur:${rand(3,7).toFixed(1)}s;animation-delay:${rand(0,6).toFixed(1)}s;`;
+    stars.appendChild(g);
+  }
+  document.body.prepend(stars);
+
+  // Soft candle-light glows (bokeh) at the edges of the screen
+  const glow = document.createElement('div');
+  glow.className = 'candle-glows';
+  glow.setAttribute('aria-hidden', 'true');
+  const spots = [[4,88,260],[94,82,300],[12,30,160],[88,22,180],[50,104,340],[70,94,140],[26,96,150]];
+  spots.forEach(([x, y, size], i) => {
+    const b = document.createElement('div');
+    b.className = 'bokeh' + (i % 3 === 0 ? ' bokeh-violet' : '');
+    b.style.cssText = `left:${x}%;top:${y}%;width:${size}px;height:${size}px;animation-delay:${(i*0.7).toFixed(1)}s;`;
+    glow.appendChild(b);
+  });
+  document.body.prepend(glow);
+
+  if (reduceMotion) return;
+
+  // Golden embers / dust slowly rising like candle smoke
+  const embers = document.createElement('div');
+  embers.className = 'embers';
+  embers.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 22; i++) {
+    const e = document.createElement('span');
+    const size = rand(1.5, 4);
+    e.style.cssText = `left:${rand(0,100)}%;width:${size}px;height:${size}px;` +
+      `--drift:${rand(-60,60).toFixed(0)}px;--dur:${rand(12,26).toFixed(1)}s;animation-delay:-${rand(0,26).toFixed(1)}s;`;
+    embers.appendChild(e);
+  }
+  document.body.prepend(embers);
 })();
+
+// Keep emojis in their real colours inside gold-gradient headings
+(function protectHeadingEmojis() {
+  const sel = '.page-title, .welcome-text h2, .home-greeting, .about-title, .contact-title, .landing-logo, .auth-logo, .picker-title';
+  const re  = /(\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic})*)/gu;
+  document.querySelectorAll(sel).forEach(el => {
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(node => {
+      if (!re.test(node.nodeValue)) return;
+      re.lastIndex = 0;
+      const span = document.createElement('span');
+      span.innerHTML = node.nodeValue.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(re, '<span class="heading-emoji">$1</span>');
+      node.replaceWith(...span.childNodes);
+    });
+  });
+})();
+
+// ===== Disclaimer pop-up =====
+// Shows every time someone opens the site fresh (typing the URL, a bookmark, a new tab,
+// coming from another website) and on every page RELOAD — even if they clicked
+// "I Understand" before. It does NOT show when moving between MysticMind pages
+// using the site's own links, buttons and forms.
+function shouldShowDisclaimer() {
+  const nav  = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+  const type = nav ? nav.type : (performance.navigation && performance.navigation.type === 1 ? 'reload' : 'navigate');
+  if (type === 'reload') return true;
+  if (type === 'back_forward') return false;
+  let internal = false;
+  try { internal = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) {}
+  return !internal;
+}
+
+function initDisclaimerPopup() {
+  if (!shouldShowDisclaimer()) return;
+  const source = document.querySelector('.footer-disclaimer');
+  if (!source || document.getElementById('disclaimer-modal')) return;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'disclaimer-modal';
+  overlay.className = 'disclaimer-overlay';
+  overlay.innerHTML = `
+    <div class="disclaimer-dialog" role="dialog" aria-modal="true" aria-labelledby="disclaimer-heading">
+      <img src="/mysticmind/assets/images/logofinalnatalagamm.png" alt="" class="disclaimer-logo">
+      <h2 id="disclaimer-heading" class="disclaimer-heading">Before You Begin</h2>
+      <div class="disclaimer-body"></div>
+      <button type="button" class="btn btn-gold disclaimer-ok">✦ I Understand</button>
+    </div>`;
+  // Re-use the footer text so the wording only lives in includes/disclaimer.php
+  source.querySelectorAll('p:not(.footer-disclaimer-title)').forEach(p => {
+    overlay.querySelector('.disclaimer-body').appendChild(p.cloneNode(true));
+  });
+  document.body.appendChild(overlay);
+  document.body.classList.add('modal-open');
+  requestAnimationFrame(() => overlay.classList.add('show'));
+
+  const ok = overlay.querySelector('.disclaimer-ok');
+  ok.focus();
+  ok.addEventListener('click', () => {
+    overlay.classList.remove('show');
+    document.body.classList.remove('modal-open');
+    setTimeout(() => overlay.remove(), 400);
+  });
+  // keep keyboard focus inside the dialog
+  overlay.addEventListener('keydown', e => { if (e.key === 'Tab') { e.preventDefault(); ok.focus(); } });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initDisclaimerPopup);
+else initDisclaimerPopup();
+
+// Sparkle burst on gold buttons
+document.addEventListener('click', (ev) => {
+  const btn = ev.target.closest('.btn-gold, .btn-primary');
+  if (!btn || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement('span');
+    s.className = 'sparkle-burst';
+    const angle = (Math.PI * 2 * i) / 10;
+    const dist  = 30 + Math.random() * 30;
+    s.style.left = ev.clientX + 'px';
+    s.style.top  = ev.clientY + 'px';
+    s.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+    s.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 700);
+  }
+});
+
+// ===== Dashboard: Card of the Day (flip to reveal, remembered for today) =====
+function initCardOfTheDay() {
+  const card = document.getElementById('cotd-card');
+  if (!card) return;
+  const panel = card.closest('.cotd-panel');
+  const key   = card.dataset.key;
+  let seen = false;
+  try { seen = localStorage.getItem(key) === '1'; } catch (e) {}
+  if (seen) { card.classList.add('flipped'); panel?.classList.add('revealed'); }
+
+  const reveal = () => {
+    if (card.classList.contains('flipped')) return;
+    card.classList.add('flipped');
+    panel?.classList.add('revealed');
+    try { localStorage.setItem(key, '1'); } catch (e) {}
+  };
+  card.addEventListener('click', reveal);
+  card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reveal(); } });
+}
+
+// ===== Dashboard: Mood trend chart (Chart.js) =====
+function initMoodChart(data) {
+  const canvas = document.getElementById('moodChart');
+  if (!canvas) return;
+  if (typeof Chart === 'undefined') {
+    canvas.parentElement.innerHTML = '<p class="empty-state">Connect to the internet to load the mood chart.</p>';
+    return;
+  }
+  const ctx  = canvas.getContext('2d');
+  const fill = ctx.createLinearGradient(0, 0, 0, 260);
+  fill.addColorStop(0, 'rgba(232,197,106,0.35)');
+  fill.addColorStop(1, 'rgba(155,109,214,0.02)');
+  const moodName = v => v === null ? 'No entries' : v >= 0.34 ? 'Positive' : v <= -0.34 ? 'Needs support' : 'Neutral';
+
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: data.labels,
+      datasets: [{
+        data: data.values,
+        borderColor: '#e8c56a',
+        backgroundColor: fill,
+        fill: true,
+        tension: 0.35,
+        spanGaps: true,
+        borderWidth: 2.5,
+        pointRadius: data.values.map(v => v === null ? 0 : 4),
+        pointHoverRadius: 7,
+        pointBackgroundColor: data.values.map(v => v >= 0.34 ? '#7ee0d6' : v <= -0.34 ? '#f0a35e' : '#c4a6f2'),
+        pointBorderColor: '#1a0f2e',
+        pointBorderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      layout: { padding: { left: 4, right: 8 } },
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(20,10,38,0.95)', borderColor: 'rgba(232,197,106,0.5)', borderWidth: 1,
+          titleColor: '#f3d98b', bodyColor: '#efe6ff', padding: 10,
+          callbacks: { label: c => ' ' + moodName(c.parsed.y) }
+        }
+      },
+      scales: {
+        y: {
+          min: -1.2, max: 1.2,
+          afterBuildTicks: axis => { axis.ticks = [-1, 0, 1].map(v => ({ value: v })); },
+          ticks: { color: '#b6a3d9', padding: 6, font: { family: 'Lato', size: 11 },
+                   callback: v => v === 1 ? 'Positive' : v === 0 ? 'Neutral' : v === -1 ? 'Low' : '' },
+          grid: { color: 'rgba(232,197,106,0.08)' }, border: { display: false }
+        },
+        x: {
+          ticks: { color: '#8f7fb5', maxTicksLimit: 7, maxRotation: 0, font: { size: 10 } },
+          grid: { display: false }, border: { color: 'rgba(232,197,106,0.15)' }
+        }
+      }
+    }
+  });
+}
 
 // ===== Spread selector =====
 function initSpreadSelector() {
@@ -250,7 +480,8 @@ function getCardImageTag(card) {
 function renderReading(data, container) {
   const { cards, spread_type, interpretation, sentiment, reading_id } = data;
 
-  let html = `<div class="panel" style="margin-top:2rem">`;
+  let html = renderSupportBox(data.support);
+  html += `<div class="panel" style="margin-top:2rem">`;
   html += `<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
     <h3 style="font-family:'Cinzel',serif;color:var(--accent);font-size:1.2rem">Your Reading</h3>
     <span class="sentiment-badge sentiment-${sentiment.value}">${sentiment.label}</span>
@@ -350,6 +581,7 @@ async function saveJournal(readingId) {
     const res  = await fetch('/mysticmind/ajax/save_journal.php', { method: 'POST', body: fd });
     const json = await res.json();
     if (status) status.textContent = json.success ? '✓ Saved!' : (json.error || 'Error saving.');
+    if (json.support && status) status.insertAdjacentHTML('afterend', renderSupportBox(json.support));
   } catch {
     if (status) status.textContent = 'Error saving.';
   }
@@ -424,6 +656,17 @@ function closeModal(id) {
 }
 
 // ===== Utility =====
+// ===== Support message (shown when crisis language is detected) =====
+function renderSupportBox(support) {
+  if (!support) return '';
+  const lines = (support.hotlines || []).map(h => `<li><strong>${escHtml(h)}</strong></li>`).join('');
+  return `<div class="support-box" style="background:rgba(160,125,224,0.12);border:1px solid rgba(160,125,224,0.5);border-radius:12px;padding:1.25rem 1.5rem;margin:1.5rem 0">
+    <h4 style="font-family:'Cinzel',serif;color:var(--accent);margin-bottom:0.5rem">${escHtml(support.title)}</h4>
+    <p style="margin-bottom:0.75rem">${escHtml(support.message)}</p>
+    <ul style="margin:0;padding-left:1.2rem">${lines}</ul>
+  </div>`;
+}
+
 function escHtml(str) {
   if (str === null || str === undefined) return '';
   return String(str)

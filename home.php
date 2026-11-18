@@ -14,9 +14,13 @@ else                                 { $greeting = 'Good Day'; $symbol = '🌙';
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <?= csrf_meta() ?>
+  <link rel="icon" href="/mysticmind/favicon.ico?v=5" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/mysticmind/assets/images/favicon-32.png?v=5">
+  <link rel="apple-touch-icon" href="/mysticmind/assets/images/apple-touch-icon.png?v=5">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home — MysticMind</title>
-  <link rel="stylesheet" href="/mysticmind/assets/css/style.css">
+  <link rel="stylesheet" href="/mysticmind/assets/css/style.css?v=<?= @filemtime(__DIR__ . '/assets/css/style.css') ?>">
   <style>
     .home-wrap {
       min-height: calc(100vh - 64px);
@@ -124,6 +128,7 @@ else                                 { $greeting = 'Good Day'; $symbol = '🌙';
     .footer-tagline-text { color:rgba(155,142,196,0.25);font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;font-family:'Cinzel',serif; }
     @media (max-width:768px) { .footer-grid { grid-template-columns:1fr;gap:2rem; } .footer-bottom-bar { justify-content:center;text-align:center; } }
   </style>
+  <link rel="stylesheet" href="/mysticmind/assets/css/theme.css?v=<?= @filemtime(__DIR__ . '/assets/css/theme.css') ?>">
 </head>
 <body>
 <nav>
@@ -143,7 +148,7 @@ else                                 { $greeting = 'Good Day'; $symbol = '🌙';
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 
-<script src="/mysticmind/assets/js/main.js"></script>
+<script src="/mysticmind/assets/js/main.js?v=<?= @filemtime(__DIR__ . '/assets/js/main.js') ?>"></script>
 
 <div class="home-wrap">
   <div class="home-content" style="position:relative;z-index:1">
@@ -200,6 +205,7 @@ else                                 { $greeting = 'Good Day'; $symbol = '🌙';
       </div>
     </div>
   </div>
+  <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
     <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>

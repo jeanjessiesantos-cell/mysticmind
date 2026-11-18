@@ -7,7 +7,9 @@ if (isLoggedIn()) { header('Location: /mysticmind/dashboard.php'); exit; }
 $errors = [];
 $success = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf()) {
+    $errors[] = 'Your session expired. Please try again.';
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = sanitize($_POST['username'] ?? '');
     $email    = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'] ?? '';
@@ -66,9 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <?= csrf_meta() ?>
+  <link rel="icon" href="/mysticmind/favicon.ico?v=5" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/mysticmind/assets/images/favicon-32.png?v=5">
+  <link rel="apple-touch-icon" href="/mysticmind/assets/images/apple-touch-icon.png?v=5">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register — MysticMind</title>
-  <link rel="stylesheet" href="/mysticmind/assets/css/style.css">
+  <link rel="stylesheet" href="/mysticmind/assets/css/style.css?v=<?= @filemtime(__DIR__ . '/assets/css/style.css') ?>">
   <style>
     .auth-back {
       display: inline-flex;
@@ -236,6 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       .footer-bottom-bar { justify-content: center; text-align: center; }
     }
   </style>
+  <link rel="stylesheet" href="/mysticmind/assets/css/theme.css?v=<?= @filemtime(__DIR__ . '/assets/css/theme.css') ?>">
 </head>
 <body>
 <nav>
@@ -272,6 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="POST" action="">
+      <?= csrf_field() ?>
       <div class="form-group">
         <label for="username">Username</label>
         <input type="text" id="username" name="username" class="form-control"
@@ -326,7 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </div>
 
-<script src="/mysticmind/assets/js/main.js"></script>
+<script src="/mysticmind/assets/js/main.js?v=<?= @filemtime(__DIR__ . '/assets/js/main.js') ?>"></script>
 <script>
 function togglePw(inputId, btn) {
   const input = document.getElementById(inputId);
@@ -403,6 +411,7 @@ function togglePw(inputId, btn) {
       </div>
     </div>
   </div>
+  <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
     <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>

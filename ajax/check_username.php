@@ -9,6 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+require_csrf_json();
+
 $username = sanitize($_POST['username'] ?? '');
 
 if (strlen($username) < 3 || !preg_match('/^[a-zA-Z0-9_]+$/', $username)) {

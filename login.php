@@ -6,7 +6,9 @@ if (isLoggedIn()) { header('Location: /mysticmind/home.php'); exit; }
 
 $errors = [];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf()) {
+    $errors[] = 'Your session expired. Please try again.';
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $identifier = sanitize($_POST['identifier'] ?? '');
     $password   = $_POST['password'] ?? '';
 
@@ -22,6 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user   = $result->fetch_assoc();
 
             if ($user && password_verify($password, $user['password'])) {
+                // New session ID on login prevents session fixation attacks
+                session_regenerate_id(true);
+                unset($_SESSION['csrf_token']);
                 $_SESSION['user_id']  = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['email']    = $user['email'];
@@ -40,9 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <?= csrf_meta() ?>
+  <link rel="icon" href="/mysticmind/favicon.ico?v=5" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/mysticmind/assets/images/favicon-32.png?v=5">
+  <link rel="apple-touch-icon" href="/mysticmind/assets/images/apple-touch-icon.png?v=5">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In — MysticMind</title>
-  <link rel="stylesheet" href="/mysticmind/assets/css/style.css">
+  <link rel="stylesheet" href="/mysticmind/assets/css/style.css?v=<?= @filemtime(__DIR__ . '/assets/css/style.css') ?>">
   <style>
     .auth-back {
       display: inline-flex;
@@ -107,6 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       .footer-bottom-bar { justify-content: center; text-align: center; }
     }
   </style>
+  <link rel="stylesheet" href="/mysticmind/assets/css/theme.css?v=<?= @filemtime(__DIR__ . '/assets/css/theme.css') ?>">
 </head>
 <body>
 
@@ -142,6 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endforeach; ?>
 
     <form method="POST" action="">
+      <?= csrf_field() ?>
       <div class="form-group">
         <label for="identifier">Username or Email</label>
         <input type="text" id="identifier" name="identifier" class="form-control"
@@ -170,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </div>
 
-<script src="/mysticmind/assets/js/main.js"></script>
+<script src="/mysticmind/assets/js/main.js?v=<?= @filemtime(__DIR__ . '/assets/js/main.js') ?>"></script>
 <script>
 function togglePw() {
   const input = document.getElementById('password');
@@ -215,6 +226,7 @@ function togglePw() {
       </div>
     </div>
   </div>
+  <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
     <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>

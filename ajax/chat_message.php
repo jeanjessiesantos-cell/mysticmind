@@ -9,6 +9,7 @@ header('Content-Type: application/json');
 
 if (!isLoggedIn()) { echo json_encode(['error' => 'Not authenticated.']); exit; }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { echo json_encode(['error' => 'Invalid request.']); exit; }
+require_csrf_json();
 
 $action = $_POST['action'] ?? 'message';
 
@@ -33,6 +34,7 @@ if ($action === 'message') {
         'ready'       => $readyToPick,
         'spread'      => $reply['spread'] ?? 'single',
         'question'    => $reply['question'] ?? $userMsg,
+        'support'     => detectCrisis($userMsg) ? getCrisisSupport() : null,
     ]);
     exit;
 }
@@ -42,6 +44,10 @@ if ($action === 'reading') {
     $spreadType = sanitize($_POST['spread_type'] ?? 'single');
     $question   = sanitize($_POST['question'] ?? '');
     $sentiment  = sanitize($_POST['sentiment'] ?? 'neutral');
+    // Only accept known values (the DB column is an ENUM); fall back to analysing the question
+    if (!in_array($sentiment, ['positive', 'neutral', 'negative'], true)) {
+        $sentiment = analyzeSentiment($question);
+    }
 
     $validSpreads = ['single', 'three_card', 'decision'];
     if (!in_array($spreadType, $validSpreads)) $spreadType = 'single';

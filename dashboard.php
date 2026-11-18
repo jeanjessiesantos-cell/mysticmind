@@ -2,6 +2,7 @@
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/sentiment.php';
+require_once __DIR__ . '/includes/stats.php';
 requireLogin();
 
 $user = getCurrentUser();
@@ -18,10 +19,11 @@ $journalQ->bind_param('i', $user['id']);
 $journalQ->execute();
 $totalJournals = $journalQ->get_result()->fetch_assoc()['total'];
 
-$streakQ = $db->prepare('SELECT COUNT(DISTINCT DATE(created_at)) as days FROM readings WHERE user_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)');
-$streakQ->bind_param('i', $user['id']);
-$streakQ->execute();
-$streakDays = $streakQ->get_result()->fetch_assoc()['days'];
+// Streaks, mood trend, card stats, Card of the Day (see includes/stats.php)
+$streaks   = getStreaks($db, $user['id']);
+$mood      = getMoodTrend($db, $user['id'], 30);
+$cardStats = getCardStats($db, $user['id']);
+$cotd      = getCardOfTheDay($user['id']);
 
 // Last sentiment
 $sentQ = $db->prepare('SELECT sentiment FROM readings WHERE user_id = ? ORDER BY created_at DESC LIMIT 1');
@@ -54,9 +56,13 @@ else                                $greeting = 'Good Night';
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <?= csrf_meta() ?>
+  <link rel="icon" href="/mysticmind/favicon.ico?v=5" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/mysticmind/assets/images/favicon-32.png?v=5">
+  <link rel="apple-touch-icon" href="/mysticmind/assets/images/apple-touch-icon.png?v=5">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard — MysticMind</title>
-  <link rel="stylesheet" href="/mysticmind/assets/css/style.css">
+  <link rel="stylesheet" href="/mysticmind/assets/css/style.css?v=<?= @filemtime(__DIR__ . '/assets/css/style.css') ?>">
   <style>
     .welcome-banner {
       background: linear-gradient(135deg, rgba(124,92,191,0.2), rgba(201,168,76,0.1));
@@ -165,6 +171,7 @@ else                                $greeting = 'Good Night';
     .footer-tagline-text{color:rgba(155,142,196,0.25);font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;font-family:'Cinzel',serif}
     @media(max-width:768px){.footer-grid{grid-template-columns:1fr;gap:2rem}.footer-bottom-bar{justify-content:center;text-align:center}}
   </style>
+  <link rel="stylesheet" href="/mysticmind/assets/css/theme.css?v=<?= @filemtime(__DIR__ . '/assets/css/theme.css') ?>">
 </head>
 <body>
 
@@ -216,18 +223,69 @@ else                                $greeting = 'Good Night';
       <div class="stat-num"><?= $totalJournals ?></div>
       <div class="stat-label">Journal Entries</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon">🌙</div>
-      <div class="stat-num" style="font-size:2rem">
-        <?= $lastSentiment ? ucfirst($lastSentiment) : '—' ?>
-      </div>
-      <div class="stat-label">Recent Mood</div>
+    <div class="stat-card stat-streak<?= $streaks['current'] > 0 ? ' is-lit' : '' ?>">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-num"><?= $streaks['current'] ?></div>
+      <div class="stat-label">Day Streak · Best <?= $streaks['longest'] ?></div>
+      <?php if ($streaks['current'] > 0 && !$streaks['active_today']): ?>
+        <div class="stat-hint">Do a reading or journal today to keep it!</div>
+      <?php endif; ?>
     </div>
     <div class="stat-card">
       <div class="stat-icon">✨</div>
       <div class="stat-num"><?= $totalReadings + $totalJournals ?></div>
       <div class="stat-label">Total Reflections</div>
     </div>
+  </div>
+
+  <!-- Card of the Day + Mood Trend -->
+  <div class="dash-feature-grid">
+
+    <div class="panel cotd-panel">
+      <div class="section-header"><h3>✦ Card of the Day</h3><span class="cotd-date"><?= date('M j') ?></span></div>
+      <div class="cotd-body">
+        <div class="cotd-card" id="cotd-card" data-key="cotd-<?= (int)$user['id'] ?>-<?= date('Y-m-d') ?>" role="button" tabindex="0" aria-label="Reveal your card of the day">
+          <div class="cotd-inner">
+            <div class="cotd-face cotd-back"><div class="card-back-art"></div><span class="cotd-tap">Tap to reveal</span></div>
+            <div class="cotd-face cotd-front">
+              <img src="<?= e($cotd['image']) ?>" alt="<?= e($cotd['name']) ?>" style="<?= $cotd['reversed'] ? 'transform:rotate(180deg)' : '' ?>"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="cotd-fallback" style="display:none"><span><?= e($cotd['symbol']) ?></span><?= e($cotd['name']) ?></div>
+            </div>
+          </div>
+        </div>
+        <div class="cotd-info">
+          <h4 class="cotd-name"><?= e($cotd['name']) ?></h4>
+          <div class="cotd-meta">
+            <span><?= e($cotd['suit']) ?></span>
+            <span class="card-orientation <?= $cotd['reversed'] ? 'reversed' : 'upright' ?>"><?= $cotd['reversed'] ? 'Reversed' : 'Upright' ?></span>
+          </div>
+          <p class="cotd-meaning"><?= e($cotd['meaning']) ?></p>
+          <p class="cotd-message">“<?= e($cotd['message']) ?>”</p>
+          <?php if ($cotd['keywords']): ?>
+          <div class="cotd-keywords"><?php foreach ($cotd['keywords'] as $k): ?><span>#<?= e($k) ?></span><?php endforeach; ?></div>
+          <?php endif; ?>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel mood-panel">
+      <div class="section-header"><h3>🌙 Mood Trend</h3><span class="cotd-date">Last 30 days</span></div>
+      <?php if ($mood['total'] === 0): ?>
+        <div class="empty-state">
+          <div class="empty-icon">📈</div>
+          <p>Your mood chart appears here after your first reading or journal entry.</p>
+        </div>
+      <?php else: ?>
+        <div class="mood-chart-wrap"><canvas id="moodChart" aria-label="Mood trend chart for the last 30 days"></canvas></div>
+        <div class="mood-legend">
+          <span class="sentiment-badge sentiment-positive">✨ <?= $mood['counts']['positive'] ?> positive</span>
+          <span class="sentiment-badge sentiment-neutral">🌙 <?= $mood['counts']['neutral'] ?> neutral</span>
+          <span class="sentiment-badge sentiment-negative">🌧 <?= $mood['counts']['negative'] ?> needs support</span>
+        </div>
+      <?php endif; ?>
+    </div>
+
   </div>
 
   <!-- Spread shortcuts -->
@@ -240,6 +298,51 @@ else                                $greeting = 'Good Night';
       <a href="/mysticmind/reading.php?spread=decision" class="btn btn-outline btn-sm">⚖️ Decision Spread</a>
     </div>
   </div>
+
+  <!-- Card statistics -->
+  <?php if ($cardStats['total'] > 0): ?>
+  <div class="panel cardstats-panel">
+    <div class="section-header"><h3>🃏 Your Card Patterns</h3><span class="cotd-date"><?= $cardStats['total'] ?> cards drawn · <?= $cardStats['unique'] ?> unique</span></div>
+    <div class="cardstats-grid">
+      <div>
+        <h5 class="cardstats-sub">Most drawn cards</h5>
+        <div class="top-cards">
+          <?php $maxCount = $cardStats['top'][0]['count'] ?? 1; foreach ($cardStats['top'] as $i => $tc): ?>
+          <div class="top-card">
+            <span class="top-rank"><?= $i + 1 ?></span>
+            <img src="<?= e($tc['image']) ?>" alt="" onerror="this.style.visibility='hidden'">
+            <div class="top-card-info">
+              <div class="top-card-name"><?= e($tc['name']) ?></div>
+              <div class="bar"><span style="width:<?= round($tc['count'] / $maxCount * 100) ?>%"></span></div>
+            </div>
+            <span class="top-count">×<?= $tc['count'] ?></span>
+          </div>
+          <?php endforeach; ?>
+        </div>
+      </div>
+      <div>
+        <h5 class="cardstats-sub">By suit</h5>
+        <?php $suitIcons = ['Major Arcana'=>'✦','Cups'=>'🏆','Wands'=>'🔥','Swords'=>'⚔️','Pentacles'=>'🪙'];
+              foreach ($cardStats['suits'] as $suit => $count): $pct = round($count / $cardStats['total'] * 100); ?>
+        <div class="suit-row">
+          <span class="suit-name"><?= $suitIcons[$suit] ?? '•' ?> <?= e($suit) ?></span>
+          <div class="bar"><span style="width:<?= $pct ?>%"></span></div>
+          <span class="suit-pct"><?= $pct ?>%</span>
+        </div>
+        <?php endforeach; ?>
+        <div class="cardstats-facts">
+          <div><strong><?= $cardStats['major_pct'] ?>%</strong><span>Major Arcana</span></div>
+          <div><strong><?= $cardStats['reversed_pct'] ?>%</strong><span>Reversed</span></div>
+        </div>
+        <?php if ($cardStats['major_pct'] >= 40): ?>
+          <p class="cardstats-insight">Many Major Arcana cards — the universe may be pointing to big life lessons right now.</p>
+        <?php elseif ($cardStats['reversed_pct'] >= 50): ?>
+          <p class="cardstats-insight">Lots of reversed cards — a sign to look inward and release what's holding you back.</p>
+        <?php endif; ?>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
 
   <!-- Two column: recent readings + recent journal -->
   <div class="two-col">
@@ -311,7 +414,14 @@ else                                $greeting = 'Good Night';
   </div>
 </div>
 
-<script src="/mysticmind/assets/js/main.js"></script>
+<script src="/mysticmind/assets/js/main.js?v=<?= @filemtime(__DIR__ . '/assets/js/main.js') ?>"></script>
+<?php if ($mood['total'] > 0): ?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  initMoodChart(<?= json_encode(['labels' => $mood['labels'], 'values' => $mood['values']]) ?>);
+</script>
+<?php endif; ?>
+<script>initCardOfTheDay();</script>
 
 <footer class="site-footer">
   <div class="footer-glow-bar"></div>
@@ -346,6 +456,7 @@ else                                $greeting = 'Good Night';
       </div>
     </div>
   </div>
+  <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
     <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>

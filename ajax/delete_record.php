@@ -14,6 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+require_csrf_json();
+
 $user = getCurrentUser();
 $db   = getDB();
 $id   = (int)($_POST['id'] ?? 0);

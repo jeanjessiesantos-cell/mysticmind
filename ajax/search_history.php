@@ -10,6 +10,8 @@ if (!isLoggedIn()) {
     exit;
 }
 
+require_csrf_json();
+
 $user = getCurrentUser();
 $db   = getDB();
 $q    = sanitize($_POST['q'] ?? '');
@@ -21,7 +23,8 @@ if ($q === '') {
     $stmt = $db->prepare('SELECT * FROM readings WHERE user_id = ? ORDER BY created_at DESC');
     $stmt->bind_param('i', $user['id']);
 } else {
-    $like = '%' . $db->real_escape_string($q) . '%';
+    // Prepared statements already handle quoting; only escape LIKE wildcards (% and _)
+    $like = '%' . addcslashes($q, '%_\\') . '%';
     $stmt = $db->prepare(
         'SELECT * FROM readings WHERE user_id = ? AND (user_question LIKE ? OR spread_type LIKE ?) ORDER BY created_at DESC'
     );

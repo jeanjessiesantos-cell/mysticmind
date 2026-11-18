@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "api/index.php": {
+      "runtime": "vercel-php@0.9.0",
+      "includeFiles": "{*.php,includes/**,ajax/**}"
+    }
+  },
+  "routes": [
+    { "src": "/", "status": 308, "headers": { "Location": "/mysticmind/" } },
+    { "src": "/mysticmind/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/mysticmind/favicon\\.ico", "dest": "/favicon.ico" },
+    { "src": "/favicon\\.ico", "dest": "/favicon.ico" },
+    { "src": "/mysticmind(/.*)?", "dest": "/api/index.php" },
+    { "src": "/(.*\\.php|includes/.*|tools/.*|ajax/.*|.*\\.sql|.*\\.md)", "status": 404 }
+  ]
+}

@@ -15,8 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+require_csrf_json();
+
 $user      = getCurrentUser();
-$text      = htmlspecialchars(trim($_POST['entry_text'] ?? ''), ENT_QUOTES, 'UTF-8');
+$text      = sanitize($_POST['entry_text'] ?? '');
 $readingId = isset($_POST['reading_id']) ? (int)$_POST['reading_id'] : null;
 
 if (strlen($text) < 3) {
@@ -44,7 +46,11 @@ if ($stmt->execute()) {
     $upd = $db->prepare('UPDATE user_preferences SET last_sentiment = ? WHERE user_id = ?');
     $upd->bind_param('si', $sentiment, $user['id']);
     $upd->execute();
-    echo json_encode(['success' => true, 'sentiment' => $sentiment]);
+    echo json_encode([
+        'success'   => true,
+        'sentiment' => $sentiment,
+        'support'   => detectCrisis($text) ? getCrisisSupport() : null,
+    ]);
 } else {
     echo json_encode(['error' => 'Failed to save.']);
 }

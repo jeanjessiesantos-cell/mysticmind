@@ -17,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+require_csrf_json();
+
 $user       = getCurrentUser();
 $spreadType = sanitize($_POST['spread_type'] ?? 'single');
 $question   = sanitize($_POST['user_question'] ?? '');
@@ -100,4 +102,5 @@ echo json_encode([
     'cards'          => $responseCards,
     'interpretation' => $interpretation,
     'sentiment'      => ['value' => $sentiment, 'label' => $sentimentLabel],
+    'support'        => detectCrisis($question) ? getCrisisSupport() : null,
 ]);

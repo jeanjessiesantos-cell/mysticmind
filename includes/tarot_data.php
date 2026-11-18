@@ -406,12 +406,13 @@ function drawCards($count, $deck = null) {
     if ($deck === null) $deck = getTarotDeck();
     $indices = array_rand($deck, $count);
     if (!is_array($indices)) $indices = [$indices];
+    shuffle($indices); // array_rand keeps deck order; shuffle so card positions are truly random
     $drawn = [];
     foreach ($indices as $i) {
         $card = $deck[$i];
         $card['upright_meaning']  = $card['upright'];
         $card['reversed_meaning'] = $card['reversed'];
-        $card['reversed']         = (rand(0, 1) === 1); // boolean: is card reversed?
+        $card['reversed']         = (random_int(0, 1) === 1); // boolean: is card reversed?
         $drawn[] = $card;
     }
     return $drawn;

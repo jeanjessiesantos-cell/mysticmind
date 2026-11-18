@@ -1,0 +1,6 @@
+tools/
+*.sql
+.git
+README.md
+assets/images/background.png
+assets/images/tarot/mysticmind.code-workspace

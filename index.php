@@ -9,9 +9,13 @@ if (isLoggedIn()) {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <?= csrf_meta() ?>
+  <link rel="icon" href="/mysticmind/favicon.ico?v=5" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/mysticmind/assets/images/favicon-32.png?v=5">
+  <link rel="apple-touch-icon" href="/mysticmind/assets/images/apple-touch-icon.png?v=5">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MysticMind — Intelligent Tarot Reading</title>
-  <link rel="stylesheet" href="/mysticmind/assets/css/style.css">
+  <link rel="stylesheet" href="/mysticmind/assets/css/style.css?v=<?= @filemtime(__DIR__ . '/assets/css/style.css') ?>">
   <style>
     /* ── Landing page overrides ── */
     body { overflow-x: hidden; }
@@ -355,6 +359,7 @@ if (isLoggedIn()) {
       .footer-bottom-bar { justify-content: center; text-align: center; }
     }
   </style>
+  <link rel="stylesheet" href="/mysticmind/assets/css/theme.css?v=<?= @filemtime(__DIR__ . '/assets/css/theme.css') ?>">
 </head>
 <body>
 
@@ -362,7 +367,7 @@ if (isLoggedIn()) {
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 
-<script src="/mysticmind/assets/js/main.js"></script>
+<script src="/mysticmind/assets/js/main.js?v=<?= @filemtime(__DIR__ . '/assets/js/main.js') ?>"></script>
 
 <nav>
   <div class="nav-inner">
@@ -449,6 +454,7 @@ if (isLoggedIn()) {
   </div>
 
   <!-- Bottom bar -->
+  <?php include __DIR__ . '/includes/disclaimer.php'; ?>
   <div class="footer-bottom-bar">
     <p class="footer-copy">© <?= date('Y') ?> <b>MysticMind</b> · All rights reserved</p>
     <p class="footer-tagline-text">Intelligent Tarot · Self-Reflection · Clarity</p>
